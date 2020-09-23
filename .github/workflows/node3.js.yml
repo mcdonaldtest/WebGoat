@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ master ]
   pull_request:
-    branches: [ develop ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -24,5 +24,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm run build --if-present
-    - run: bash <(curl -s https://copilot-test.blackducksoftware.com/ci/githubactions/scripts/upload)
+    - name: Set up Java (CoPilot)
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Upload to CoPilot
+      if: github.event_name == 'push' || github.event_name == 'pull_request'
+      run: bash <(curl -s https://copilot.blackducksoftware.com/ci/githubactions/scripts/upload)
